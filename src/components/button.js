@@ -1,8 +1,13 @@
 import React from 'react';
 
-const Button = () => {
+const Button = (props) => {
     return (
-        <div className="btn" />
+        <button
+        id={props.id}
+        className="btn"
+        onClick={props.content === '=' ? props.evaluate : props.content === 'C' ? props.clear : props.handleClick} >
+            {props.content}
+        </button>
     )
 }
 
