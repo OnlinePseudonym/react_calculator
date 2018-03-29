@@ -36,7 +36,7 @@ class Calculator extends Component {
                 temp = char;
             }
         } else if (ops.indexOf(char) > -1) {
-            if (this.state.calculation.length < 1) {
+            if ((this.state.calculation.length < 1) && (char !== '-')) {
                 temp = '';
             } else if ((char === '%') && (this.state.calculation[this.state.calculation.length -1] === '%')) {
                 temp = '';
@@ -80,6 +80,8 @@ class Calculator extends Component {
             if ('x÷+-'.indexOf(ch) > -1) {
                 if (current === '' && ch === '-') {
                     current = '-';
+                } else if (current === '') {
+                    calculation.push(ch);
                 } else {
                     calculation.push(new Decimal(current), ch);
                     current = '';
@@ -89,6 +91,7 @@ class Calculator extends Component {
             } else {
                 current += s.charAt(i);
             }
+            console.log(calculation);
         }
         if (current !== '') {
             calculation.push(new Decimal(current));
@@ -133,6 +136,7 @@ class Calculator extends Component {
         const ops = '÷x-+';
         if (ops.indexOf(this.state.calculation[this.state.calculation.length-1]) > -1) return;
         this.setState({
+            calculation: `(${this.state.calculation})`,
             isEvaluated: true,
             output: this.calculate(this.parseCalculationString(this.state.calculation.replace('%','÷100')))
         })
