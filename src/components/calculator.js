@@ -50,7 +50,16 @@ class Calculator extends Component {
                         temp = char;
                     }
                 } else {
-                    temp = '';
+                    if (ops.indexOf(this.state.calculation[this.state.calculation.length-2]) > -1) {
+                        return this.setState({
+                            calculation: this.state.calculation.slice(0,-2) + char,
+                            output: this.state.output.slice(0,-2) + char,
+                        })
+                    }
+                    return this.setState({
+                        calculation: this.state.calculation.slice(0,-1) + char,
+                        output: this.state.output.slice(0,-1) + char,
+                    });
                 }
             }
         } else if ((char === '(') && (this.state.calculation === '')) {
@@ -60,8 +69,11 @@ class Calculator extends Component {
                    ((char.match(/[0-9]/) != null) && (this.state.calculation[this.state.calculation.length -1] === '%'))) {
             temp = `x${char}`;
         } else if ((char.match(/[0-9]/) != null) && (this.state.isEvaluated)) {
-            this.clearDisplay();
-            temp = char;
+            return this.setState({
+                calculation: char,
+                output: char,
+                isEvaluated: false,
+            });
         } else {
             temp = char;
         }
@@ -91,12 +103,10 @@ class Calculator extends Component {
             } else {
                 current += s.charAt(i);
             }
-            console.log(calculation);
         }
         if (current !== '') {
             calculation.push(new Decimal(current));
         }
-        console.log(calculation);
         return calculation;
     }
 
@@ -150,7 +160,6 @@ class Calculator extends Component {
     }
     
     render() {
-        console.log(this.state.calculation);
         return (
             <div className="calculator">
                 <Display output={this.state.output} />
