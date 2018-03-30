@@ -1,4 +1,4 @@
-# Drum Kit
+# Calculator
 ## Table of Contents
 
 * [Description](#description)
@@ -24,4 +24,4 @@ Once the application is loaded in your browser use your mouse to click on the ap
 
 ## License
 
-**Drum Kit** is under the MIT License.
+**Calculator** is under the MIT License.
