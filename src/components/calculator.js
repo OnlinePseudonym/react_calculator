@@ -21,11 +21,11 @@ class Calculator extends Component {
     }
 
     handleClick(e) {
+        // TODO conver to switch statment with calls to specialized functions
         const char = e.target.innerText;
         const numArr = this.state.calculation.split(/[()%÷x\-+]/);
         const ops = '%÷x-+';
         let temp = '';
-
         if (char === '.') {
             if (numArr[numArr.length -1].includes('.')) {
                 return;
@@ -40,7 +40,7 @@ class Calculator extends Component {
                 temp = '';
             } else if ((char === '%') && (this.state.calculation[this.state.calculation.length -1] === '%')) {
                 temp = '';
-            } else if (this.state.calculation[this.state.calculation.length - 1].match(/[0-9)%]/) != null) {
+            } else if ((this.state.calculation.length > 0) && (this.state.calculation[this.state.calculation.length - 1].match(/[0-9)%]/) != null)) {
                 temp = char;
             } else {
                 if (char === '-') {
@@ -85,12 +85,14 @@ class Calculator extends Component {
     }
 
     parseCalculationString(s) {
+        let followsParen = false;
         const calculation = [];
         let current = '';
 
         for (let i = 0, ch; ch = s.charAt(i); i++) {
             if ('x÷+-'.indexOf(ch) > -1) {
                 if (current === '' && ch === '-') {
+                    followsParen ? (calculation.push(ch), followsParen = false) : current = '-';
                     current = '-';
                 } else if (current === '') {
                     calculation.push(ch);
@@ -99,10 +101,22 @@ class Calculator extends Component {
                     current = '';
                 }
             } else if ('()'.indexOf(ch) > -1) {
-                ')'.indexOf(ch) > -1 ? (calculation.push(new Decimal(current), ch), current = '') : calculation.push(ch);
+                if (ch === ')') {
+                    calculation.push(new Decimal(current), ch);
+                    current = '';
+                    followsParen = true;
+                } else {
+                    calculation.push(ch);
+                }
             } else {
+                if (followsParen) {
+                    // TODO refactor to handle click
+                    calculation.push('x');
+                    followsParen = false;
+                }
                 current += s.charAt(i);
             }
+
         }
         if (current !== '') {
             calculation.push(new Decimal(current));
@@ -118,17 +132,17 @@ class Calculator extends Component {
             currentOp;
         for (let i = 0; i < ops.length; i++) {
             for (let j = 0; j < calc.length; j++) {
-            if (calc[j] === '(') {
-                newCalc.push(this.calculate(calc.slice(j+1, calc.lastIndexOf(')'))));
-                j += calc.lastIndexOf(')') - j;
-            } else if (ops[i][calc[j]]) {
-                currentOp = ops[i][calc[j]];
-            } else if (currentOp) {
-                newCalc[newCalc.length - 1] = currentOp(newCalc[newCalc.length - 1], calc[j]);
-                currentOp = null;
-            } else {
-                newCalc.push(calc[j]);
-            }
+                if (calc[j] === '(') {
+                    newCalc.push(this.calculate(calc.slice(j+1, calc.lastIndexOf(')'))));
+                    j += calc.lastIndexOf(')') - j;
+                } else if (ops[i][calc[j]]) {
+                    currentOp = ops[i][calc[j]];
+                } else if (currentOp) {
+                    newCalc[newCalc.length - 1] = currentOp(newCalc[newCalc.length - 1], calc[j]);
+                    currentOp = null;
+                } else {
+                    newCalc.push(calc[j]);
+                }
             }
             calc = newCalc;
             newCalc = [];
@@ -137,7 +151,6 @@ class Calculator extends Component {
             console.log('Error: unable to resolve calculation');
             return calc;
         } else {
-            console.log(calc[0].toDP(10));
             return calc[0].toDP(10);
         }
     }
@@ -148,7 +161,7 @@ class Calculator extends Component {
         this.setState({
             calculation: `(${this.state.calculation})`,
             isEvaluated: true,
-            output: this.calculate(this.parseCalculationString(this.state.calculation.replace('%','÷100')))
+            output: this.calculate(this.parseCalculationString(this.state.calculation.replace('%','÷100'))),
         })
     }
 
