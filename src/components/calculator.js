@@ -90,9 +90,10 @@ class Calculator extends Component {
         let current = '';
 
         for (let i = 0, ch; ch = s.charAt(i); i++) {
+            console.log(ch);
             if ('x÷+-'.indexOf(ch) > -1) {
                 if (current === '' && ch === '-') {
-                    followsParen ? (calculation.push(ch), followsParen = false) : current = '-';
+                    followsParen ? calculation.push(ch) : current = '-';
                     current = '-';
                 } else if (current === '') {
                     calculation.push(ch);
@@ -100,6 +101,7 @@ class Calculator extends Component {
                     calculation.push(new Decimal(current), ch);
                     current = '';
                 }
+                followsParen = false;
             } else if ('()'.indexOf(ch) > -1) {
                 if (ch === ')') {
                     calculation.push(new Decimal(current), ch);
